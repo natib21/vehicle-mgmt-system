@@ -1,0 +1,16 @@
+{
+  "name": "car-app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "author": "Nathnael Zelalem",
+  "license": "ISC",
+  "description": "this is mini-project for job that use REST API using MERN stack",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4"
+  }
+}
