@@ -12,6 +12,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import ModalUi from "../Modal/Modal";
 import CreateCarForm from "../ui/CreateCarForm";
+import { useEffect } from "react";
+import { getCars } from "../../services/carApi";
+import { deleteCar } from "../../services/carApi";
 function createData(name, make, model, status, color) {
   return { name, make, model, status, color };
 }
@@ -26,18 +29,42 @@ const rows = [
 
 export default function Layout() {
   const [open, setOpen] = useState(false);
+  const [cars, setCars] = useState([]);
+  const [selectedCar, setSelectedCar] = useState(null);
 
-  const handleEdit = (id) => {
-    console.log(id);
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const res = await getCars();
+        const carsData = res.cars || [];
+        setCars(carsData);
+      } catch (error) {
+        console.error("Failed to load cars:", error);
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  const handleEdit = (car) => {
+    console.log(car);
+    setSelectedCar(car);
     setOpen(true);
   };
-  const handleDelete = (id) => {
-    console.log(id);
+  const handleDelete = async (car) => {
+    console.log(car);
+    const deletCar = await deleteCar(car._id);
+    if (!deletCar) {
+      console.log("Not deleted");
+    } else {
+      console.log("Car Succefully deleted");
+    }
   };
   const hadleCreateCar = () => {
     console.log("handle create");
     setOpen(true);
   };
+  console.log(cars);
   return (
     <div>
       <TableContainer component={Paper}>
@@ -54,11 +81,12 @@ export default function Layout() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
+            {cars.map((row, index) => (
               <TableRow
-                key={row.name}
+                key={index}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
+                {console.log(row)}
                 <TableCell component="th" scope="row">
                   {row.name}
                 </TableCell>
@@ -88,9 +116,23 @@ export default function Layout() {
           Add Vehicle
         </Button>
       </div>
+      <div className="mt-100">
+        <p className="text-2xl text-pink-500 text-center">
+          {" "}
+          This is Small App is Developed in
+          <br /> 3hr after reading job posted in Freelance
+          <br /> Ethiopia i am Nathnael Zelalem i used{" "}
+          <span className="text-pretty uppercase underline text-slate-800">
+            <a href="https://www.geeksforgeeks.org/mern-stack/">MERN stack</a>
+          </span>
+          <br /> which include 3rd party packages MUI,React hook form, tailwind
+          css <br />
+          <span className="text-slate-700 ">Thank you 🙏</span>
+        </p>
+      </div>
       {open && (
         <ModalUi open={open} handleClose={setOpen}>
-          <CreateCarForm handleClose={setOpen} />
+          <CreateCarForm handleClose={setOpen} carToEdit={selectedCar} />
         </ModalUi>
       )}
     </div>
